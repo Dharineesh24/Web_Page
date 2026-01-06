@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Audi Showroom - Premium Cars</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link rel="shortcut icon" href="./car.png" type="image/x-icon">
+<style>
+  /* Reset and base */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0b0c10, #1f2833);
+    color: #e1e1e1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  /* Scrollbar - custom */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #1f2833;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #6366f1;
+    border-radius: 4px;
+  }
+  /* Glass morphism helpers */
+  .glass {
+    background: rgba(14, 14, 16, 0.55);
+    backdrop-filter: saturate(200%) blur(16px);
+    -webkit-backdrop-filter: saturate(200%) blur(16px);
+    border-radius: 12px;
+    border: 1px solid rgba(255 255 255 / 0.1);
+  }
+  /* HEADER */
+  header {
+    position: sticky;
+    top: 0;
+    height: 64px;
+    background: rgba(14, 14, 16, 0.75);
+    backdrop-filter: saturate(180%) blur(18px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255 255 255 / 0.1);
+    user-select: none;
+  }
+  header .brand {
+    font-weight: 800;
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    color: #6366f1;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  header .brand .material-icons {
+    font-size: 28px;
+    color: #a7b1fc;
+  }
+  nav.desktop-nav {
+    display: flex;
+    gap: 40px;
+  }
+  nav.desktop-nav a {
+    position: relative;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 6px 0;
+    color: #cbd5e1;
+    transition: color 0.3s ease;
+  }
+  nav.desktop-nav a::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: #6366f1;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+  nav.desktop-nav a:hover,
+  nav.desktop-nav a:focus {
+    color: #a5b5ff;
+  }
+  nav.desktop-nav a:hover::after,
+  nav.desktop-nav a:focus::after {
+    width: 100%;
+  }
+  /* HEADER USER CONTROLS */
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .header-controls button {
+    background: none;
+    border: none;
+    color: #cbd5e1;
+    font-size: 24px;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+    position: relative;
+  }
+  .header-controls button:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+  }
+  .header-controls button:hover {
+    background-color: rgba(99, 102, 241, 0.2);
+  }
+  /* NOTIFICATION BADGE */
+  .badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background-color: #ef4444;
+    color: white;
+    font-size: 0.625rem;
+    font-weight: 700;
+    padding: 0 6px;
+    line-height: 1.2;
+    border-radius: 12px;
+    min-width: 18px;
+    text-align: center;
+    user-select: none;
+  }
+  /* SIDEBAR */
+  aside.sidebar {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    width: 280px;
+    height: calc(100vh - 64px);
+    background: rgba(14, 14, 16, 0.7);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-right: 1px solid rgba(255 255 255 / 0.1);
+    padding-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transform: translateX(0);
+    transition: transform 0.3s ease;
+    z-index: 900;
+  }
+  aside.sidebar.closed {
+    transform: translateX(-100%);
+  }
+  aside.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 20px;
+  }
+  aside.sidebar nav a {
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-weight: 600;
+    padding: 10px 12px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    position: relative;
+  }
+  aside.sidebar nav a .material-icons {
+    font-size: 24px;
+    color: #a0a0ff;
+    flex-shrink: 0;
+  }
+  aside.sidebar nav a:hover,
+  aside.sidebar nav a:focus-visible {
+    background-color: rgba(99, 102, 241, 0.25);
+    outline: none;
+  }
+  aside.sidebar nav a .badge {
+    right: 12px;
+    top: 12px;
+  }
+  /* SIDEBAR TOGGLE BUTTON - ONLY ON MOBILE */
+  .sidebar-toggle-btn {
+    display: none;
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 1100;
+    background: rgba(99, 102, 241, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    color: white;
+    box-shadow: 0 8px 18px rgba(99, 102, 241, 0.4);
+    transition: background-color 0.3s ease;
+  }
+  .sidebar-toggle-btn:focus-visible {
+    outline: 3px solid #6366f1;
+    outline-offset: 2px;
+  }
+  .sidebar-toggle-btn:hover {
+    background: #6366f1;
+  }
+  /* MAIN AREA */
+  main.content {
+    margin-left: 280px;
+    padding: 32px 48px 80px 48px;
+    min-height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    background: transparent;
+  }
+  /* Responsive main area margin */
+  @media (max-width: 1024px) {
+    main.content {
+      margin-left: 0;
+      padding: 24px 16px 80px 16px;
+    }
+  }
+
+  /* HERO SECTION */
+  section.hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 400px;
+    background: url("https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/12b4cdab-0d3a-4755-8766-9fa7ca19d793.png") no-repeat center/cover;
+    border-radius: 20px;
+    color: white;
+    padding: 48px 24px 48px 48px;
+    box-shadow: 0 16px 40px rgb(99 102 241 / 0.6);
+  }
+  section.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(9,9,15,0.8) 10%, transparent 80%);
+    border-radius: 20px;
+    pointer-events: none;
+  }
+  section.hero > * {
+    position: relative;
+    z-index: 2;
+  }
+  section.hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    margin-bottom: 16px;
+    line-height: 1.1;
+  }
+  section.hero p {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    max-width: 480px;
+    opacity: 0.85;
+    margin-bottom: 32px;
+  }
+  section.hero button {
+    background: #6366f1;
+    color: #fff;
+    font-weight: 700;
+    padding: 20px 40px;
+    font-size: 1.125rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgb(99 102 241 / 0.4);
+    transition: background-color 0.3s ease;
+  }
+  section.hero button:hover,
+  section.hero button:focus-visible {
+    background: #787bff;
+    outline: none;
+  }
+  /* SEARCH & FILTERS */
+  section.search-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+  }
+  section.search-filter input[type="search"] {
+    flex: 1;
+    min-width: 220px;
+    padding: 14px 20px;
+    font-size: 1rem;
+    background: rgba(14, 14, 16, 0.7);
+    border: 1px solid #444;
+    border-radius: 12px;
+    color: #cbd5e1;
+    transition: border-color 0.3s ease;
+  }
+  section.search-filter input[type="search"]::placeholder {
+    color: #7f8ea4;
+  }
+  section.search-filter input[type="search"]:focus {
+    border-color: #6366f1;
+    outline: none;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
+  }
+  section.search-filter select {
+    padding: 14px 20px;
+    font-size: 1rem;
+    border-radius: 12px;
+    border: 1px solid #444;
+    background: rgba(14, 14, 16, 0.7);
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+  }
+  section.search-filter select:focus {
+    border-color: #6366f1;
+    outline: none;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
+  }
+  /* CAR LISTING */
+  section.car-listing {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(320px,1fr));
+    gap: 28px;
+  }
+  article.car-card {
+    background: rgba(14, 14, 16, 0.65);
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgb(63 65 102 / 0.2);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  article.car-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 40px rgb(99 102 241 / 0.5);
+  }
+  article.car-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    object-position: center;
+    flex-shrink: 0;
+  }
+  article.car-card .car-content {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex-grow: 1;
+  }
+  article.car-card h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #a0a9fc;
+    margin: 0;
+  }
+  article.car-card p {
+    font-size: 1rem;
+    color: #cbd5e1cc;
+    line-height: 1.4;
+    flex-grow: 1;
+  }
+  .car-card .price {
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: #6ee7b7;
+  }
+  /* BUTTONS inside cards */
+  .car-card button {
+    background: #393a3f;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-weight: 600;
+    color: #cbd5e1;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: background-color 0.25s ease;
+  }
+  .car-card button:hover,
+  .car-card button:focus-visible {
+    background-color: #6366f1;
+    outline: none;
+  }
+  /* FOOTER */
+  footer.site-footer {
+    background: rgba(14, 14, 16, 0.85);
+    backdrop-filter: saturate(180%) blur(20px);
+    padding: 24px 48px;
+    color: #8f9bb3;
+    font-size: 0.9rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  footer.site-footer .social-links {
+    display: flex;
+    gap: 16px;
+  }
+  footer.site-footer .social-links a {
+    color: #6366f1;
+    font-size: 28px;
+    transition: color 0.3s ease;
+  }
+  footer.site-footer .social-links a:hover,
+  footer.site-footer .social-links a:focus-visible {
+    color: #a0a9ffc9;
+    outline: none;
+  }
+  footer.site-footer .footer-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4ade80;
+    font-weight: 600;
+  }
+  footer.site-footer .footer-status .material-icons {
+    font-size: 20px;
+  }
+  /* MISC Utility */
+  .hidden {
+    display: none !important;
+  }
+  /* MEDIA QUERIES */
+  @media (max-width: 1024px) {
+    aside.sidebar {
+      position: fixed;
+      top: 64px;
+      left: 0;
+      height: calc(100vh - 64px);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    aside.sidebar.open {
+      transform: translateX(0);
+    }
+    .sidebar-toggle-btn {
+      display: block;
+    }
+    main.content {
+      margin-left: 0 !important;
+      padding: 24px 16px 80px 16px !important;
+      min-height: calc(100vh - 64px);
+    }
+  }
+  @media (max-width: 600px) {
+    section.hero {
+      min-height: 280px;
+      padding: 32px 16px 32px 24px;
+      border-radius: 12px;
+    }
+    section.hero h1 {
+      font-size: 2rem;
+    }
+    section.hero p {
+      max-width: none;
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+    section.search-filter {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    section.search-filter input[type="search"],
+    section.search-filter select {
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+  <button 
+    aria-label="Toggle sidebar navigation"
+    class="sidebar-toggle-btn material-icons"
+    id="sidebarToggleBtn"
+    aria-expanded="false"
+    aria-controls="sidebar"
+  >menu</button>
+
+  <header>
+    <a href="#" class="brand" aria-label="Audi Showroom Home">
+      <span class="material-icons" aria-hidden="true">directions_car</span>
+      <span>AUDI</span>
+    </a>
+    <nav class="desktop-nav" aria-label="Primary navigation">
+      <a href="#" tabindex="0">Home</a>
+      <a href="#inventory" tabindex="0">Inventory</a>
+      <a href="#contact" tabindex="0">Contact</a>
+      <a href="#about-us" tabindex="0">About Us</a>
+    </nav>
+    <div class="header-controls">
+      <button aria-label="Search" title="Search"><span class="material-icons">search</span></button>
+      <button aria-label="Notifications" title="Notifications" id="notifBtn" aria-haspopup="true" aria-expanded="false">
+        <span class="material-icons">notifications</span>
+        <span class="badge" id="notificationCount" aria-live="polite" aria-atomic="true">3</span>
+      </button>
+      <button aria-label="User Profile" title="User Profile"><span class="material-icons">person</span></button>
+    </div>
+  </header>
+
+  <aside class="sidebar glass" id="sidebar" aria-label="Sidebar navigation" role="navigation">
+    <nav>
+      <a href="#" tabindex="0">
+        <span class="material-icons" aria-hidden="true">home</span> Dashboard
+      </a>
+      <a href="#inventory" tabindex="0">
+        <span class="material-icons" aria-hidden="true">directions_car</span> Inventory
+        <span class="badge" aria-label="5 new cars available">5</span>
+      </a>
+      <a href="#orders" tabindex="0">
+        <span class="material-icons" aria-hidden="true">assignment</span> Orders
+        <span class="badge" aria-label="2 pending orders">2</span>
+      </a>
+      <a href="#settings" tabindex="0">
+        <span class="material-icons" aria-hidden="true">settings</span> Settings
+      </a>
+    </nav>
+  </aside>
+
+  <main class="content" id="mainContent" tabindex="-1" role="main">
+    <section class="hero" aria-label="Featured Audi vehicle">
+      <h1>Experience the Future of Driving with Audi</h1>
+      <p>The latest models engineered with precision, performance, and design excellence.</p>
+      <button id="discoverBtn" type="button">Discover Now</button>
+    </section>
+
+    <section class="search-filter" aria-label="Search and filter cars">
+      <input
+        type="search"
+        id="carSearch"
+        placeholder="Search Audi models..."
+        aria-controls="carList"
+        aria-label="Search Audi cars by model"
+        autocomplete="off"
+      />
+      <select id="priceFilter" aria-label="Filter cars by price range">
+        <option value="">All Prices</option>
+        <option value="low">&#60; $50,000</option>
+        <option value="mid">$50,000 - $80,000</option>
+        <option value="high">&#62; $80,000</option>
+      </select>
+      <select id="sortSelect" aria-label="Sort cars">
+        <option value="newest">Newest</option>
+        <option value="priceLow">Price: Low to High</option>
+        <option value="priceHigh">Price: High to Low</option>
+      </select>
+    </section>
+
+    <section class="car-listing" id="carList" aria-live="polite" aria-relevant="additions removals" aria-label="List of available Audi cars">
+      <!-- Car cards inserted dynamically -->
+    </section>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div>
+      &copy; 2024 Audi Showroom. All rights reserved.
+    </div>
+    <div class="footer-status" aria-live="polite" aria-atomic="true">
+      <span class="material-icons" aria-hidden="true">check_circle</span> All systems operational
+    </div>
+    <div class="social-links" role="list">
+      <a href="https://facebook.com/Audi" target="_blank" rel="noopener" aria-label="Facebook" role="listitem"><span class="material-icons">facebook</span></a>
+      <a href="https://twitter.com/Audi" target="_blank" rel="noopener" aria-label="Twitter" role="listitem"><span class="material-icons">twitter</span></a>
+      <a href="https://instagram.com/Audi" target="_blank" rel="noopener" aria-label="Instagram" role="listitem"><span class="material-icons">photo_camera</span></a>
+      <a href="https://linkedin.com/company/Audi" target="_blank" rel="noopener" aria-label="LinkedIn" role="listitem"><span class="material-icons">linkedin</span></a>
+    </div>
+  </footer>
+
+<script>
+  // Dummy car data array
+  const cars = [
+    {
+      id: 1,
+      model: "Audi A4",
+      description: "Compact luxury sedan with dynamic performance and advanced technology.",
+      price: 45000,
+      img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/71b18dad-5023-45d0-9483-4f82ccb69792.png",
+      releaseDate: "2023-08-15"
+    },
+    {
+      id: 2,
+      model: "Audi Q7",
+      description: "Spacious SUV with premium comfort and intelligent all-wheel drive.",
+      price: 78000,
+      img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/44a03fd7-39fd-4124-b41b-2a4aca55946e.png",
+      releaseDate: "2024-03-20"
+    },
+    {
+      id: 3,
+      model: "Audi e-tron GT",
+      description: "High-performance electric coupe with cutting-edge design and power.",
+      price: 102000,
+      img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/217bc59a-02dd-4b90-accd-76aec5f0209b.png",
+      releaseDate: "2024-01-10"
+    },
+    {
+      id: 4,
+      model: "Audi RS5",
+      description: "Sporty and aggressive coupe designed for an exhilarating drive.",
+      price: 67000,
+      img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/95e85e93-6a06-4d67-835b-6ca1cfce1d27.png",
+      releaseDate: "2023-11-05"
+    },
+    {
+      id: 5,
+      model: "Audi Q5",
+      description: "Versatile luxury SUV with a balance of performance and practicality.",
+      price: 53000,
+      img: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/1d8010d8-9d19-41e4-8af5-27ca06376099.png",
+      releaseDate: "2023-09-25"
+    }
+  ];
+
+  // State
+  let filteredCars = [...cars];
+
+  // Elements
+  const carListEl = document.getElementById('carList');
+  const carSearchInput = document.getElementById('carSearch');
+  const priceFilterSelect = document.getElementById('priceFilter');
+  const sortSelect = document.getElementById('sortSelect');
+  const sidebar = document.getElementById('sidebar');
+  const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+  const notifBtn = document.getElementById('notifBtn');
+  const notificationCount = document.getElementById('notificationCount');
+
+  // Render cars in carList
+  function renderCars(carsToRender) {
+    carListEl.innerHTML = '';
+    if (carsToRender.length === 0) {
+      const noResults = document.createElement('p');
+      noResults.textContent = "No cars matched your search criteria.";
+      noResults.style.color = "#cbd5e1";
+      noResults.style.fontStyle = "italic";
+      noResults.style.gridColumn = "1 / -1";
+      carListEl.appendChild(noResults);
+      return;
+    }
+    carsToRender.forEach(car => {
+      // Highlight search matches in model name
+      let safeModel = car.model.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const searchValue = carSearchInput.value.trim().toLowerCase();
+      if (searchValue) {
+        const regex = new RegExp(`(${searchValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        safeModel = safeModel.replace(regex, `<mark style="background:#6366f1cc; color:#e0e0ff;">$1</mark>`);
+      }
+      const card = document.createElement('article');
+      card.className = 'car-card';
+      card.tabIndex = 0;
+      card.innerHTML = `
+        <img loading="lazy" src="${car.img}" alt="Image of ${car.model} luxury car" />
+        <div class="car-content">
+          <h3 aria-label="Model name">${safeModel}</h3>
+          <p>${car.description}</p>
+          <div class="price" aria-label="Price">$${car.price.toLocaleString()}</div>
+          <button aria-label="View details for ${car.model}" type="button">View Details</button>
+        </div>
+      `;
+      carListEl.appendChild(card);
+    });
+  }
+
+  // Filter function
+  function filterCars() {
+    const searchTerm = carSearchInput.value.trim().toLowerCase();
+    const priceFilter = priceFilterSelect.value;
+    const sortValue = sortSelect.value;
+
+    filteredCars = cars.filter(car => {
+      const matchesSearch = car.model.toLowerCase().includes(searchTerm);
+      let matchesPrice = true;
+      if (priceFilter === 'low') {
+        matchesPrice = car.price < 50000;
+      } else if (priceFilter === 'mid') {
+        matchesPrice = car.price >= 50000 && car.price <= 80000;
+      } else if (priceFilter === 'high') {
+        matchesPrice = car.price > 80000;
+      }
+      return matchesSearch && matchesPrice;
+    });
+
+    // Sort
+    if (sortValue === 'newest') {
+      filteredCars.sort((a,b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+    } else if (sortValue === 'priceLow') {
+      filteredCars.sort((a,b) => a.price - b.price);
+    } else if (sortValue === 'priceHigh') {
+      filteredCars.sort((a,b) => b.price - a.price);
+    }
+
+    renderCars(filteredCars);
+  }
+  // Debounce utility for performance
+  function debounce(func, wait = 300) {
+    let timeout;
+    return function(...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+  }
+
+  // Sidebar toggle
+  function toggleSidebar() {
+    const expanded = sidebarToggleBtn.getAttribute('aria-expanded') === 'true';
+    if (expanded) {
+      sidebar.classList.remove('open');
+      sidebarToggleBtn.setAttribute('aria-expanded', 'false');
+    } else {
+      sidebar.classList.add('open');
+      sidebarToggleBtn.setAttribute('aria-expanded', 'true');
+    }
+  }
+
+  // Notification button click simulation
+  notifBtn.addEventListener('click', () => {
+    notificationCount.style.display = 'none';
+    notifBtn.setAttribute('aria-expanded', 'false');
+    alert('You have 3 new notifications related to your orders and inquiries.');
+  });
+
+  sidebarToggleBtn.addEventListener('click', toggleSidebar);
+  carSearchInput.addEventListener('input', debounce(filterCars, 250));
+  priceFilterSelect.addEventListener('change', filterCars);
+  sortSelect.addEventListener('change', filterCars);
+  document.getElementById('discoverBtn').addEventListener('click', () => {
+    alert('Discover the latest Audi models now!');
+  });
+
+  // Initial render
+  renderCars(cars);
+
+  // Accessibility: Keyboard trap for sidebar on mobile open
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === "Escape" || e.key === "Esc") && sidebar.classList.contains('open')) {
+      toggleSidebar();
+      sidebarToggleBtn.focus();
+    }
+  });
+
+  // Accessibility: focus main content on load (skip nav behavior)
+  window.addEventListener('load', () => {
+    document.getElementById('mainContent').focus();
+  });
+
+</script>
+</body>
+</html>
+
